@@ -1,36 +1,151 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Prospect Research
 
-## Getting Started
+An AI-powered prospect research and outreach system. Company intelligence, competitor analysis, strategy generation, email drafting, and sending — all automated through n8n workflows with a Next.js frontend.
 
-First, run the development server:
+---
+
+## System Architecture
+
+### n8n Workflow (Live Screenshot)
+
+The actual n8n workflow — 5 color-coded action routes triggered by a single webhook:
+
+![n8n Workflow](docs/n8n-workflow.png)
+
+### System Flow Diagram
+
+Clean architecture breakdown — how all 5 flows connect, what each node does, and where data lands:
+
+[![System Flow Diagram](docs/system-flow-diagram.png)](https://excalidraw.com/#json=d45JxtqejWDwfiKHFHESC,tJaq6vHoRAHmx6eYsYb2ZQ)
+
+> Click the diagram to open it in Excalidraw (interactive, zoomable, editable)
+
+---
+
+## How It Works
+
+```
+Frontend (Next.js) → n8n Webhook → Switch Node → 5 Routes → Airtable → Response → Frontend
+```
+
+| Flow | Action | What It Does |
+|------|--------|--------------|
+| **1 — Company Search** | `research` | Filter Fields → Apify LinkedIn Scraper → Save to Airtable |
+| **2 — Competitor Research** | `competitor_research` | Search Records → Company Analysis Agent → Structure Output → Competitor Analysis Agent |
+| **3 — Strategy Generation** | `generate_strategy` | 3 chained AI agents: Complete Analysis → Pain Points + Solutions → Strategy Hooks |
+| **4 — Email Drafting** | `draft_email` | Get Strategies + Company Data → Email Drafting Agent (Claude) → Save to Email Log |
+| **5 — Email Sending** | `send_email` | Email Send Agent (Claude) → Gmail Send Tool → Save message_id + SENT status |
+
+### Data Layer — Airtable (3 Tables)
+
+| Table | Stores |
+|-------|--------|
+| **Company Brief** | Basic company info from LinkedIn scrape |
+| **Company Data** | Full research + competitor analysis |
+| **Strategy Data + Email Log** | Strategies, drafted emails, send status, message IDs |
+
+---
+
+## n8n Workflows
+
+The automation layer lives in **n8n** (self-hosted). The workflow handles all 5 action routes through a single webhook entry point.
+
+**Key integrations used in n8n:**
+- **Apify** — LinkedIn company scraping
+- **Firecrawl** — Website scraping + competitor research
+- **OpenAI / Claude** — AI agents for analysis, strategy, email drafting
+- **Gmail OAuth2** — Sending emails
+- **Airtable** — Data storage (3 tables)
+- **Wait + Retry nodes** — Self-healing on token limit errors
+
+> n8n workflows are managed through the n8n editor UI. The webhook URLs are configured in `.env.local`.
+
+---
+
+## What's Built
+
+### Frontend Interface
+- Multi-page app — Home, Research (`/scrape`), Database (`/database`)
+- Dark / Light theme toggle with neumorphic design system
+- Responsive drawer panel for viewing company records
+
+### Company Research
+- Add company by name + LinkedIn URL
+- Research triggers automatically on add
+- Data pulled from Airtable via n8n webhook and stored locally
+- Fields: Company Name, Universal Name, Tagline, Description, Employee Count, LinkedIn URL, Website URL, Industries, Specialities, Locations, Phone Number
+
+### Competitor Research
+- One-click competitor research trigger per company
+- Sends `action: competitor_research` + Interface ID to n8n webhook
+
+### Strategy & Email Pipeline
+- One-click strategy generation (3 chained AI agents)
+- One-click email draft (Claude-powered, signs as Abhay)
+- One-click email send (Gmail OAuth2, tracks message_id)
+- Full pipeline: **Research → Analyze → Strategize → Draft → Send**
+
+### Database
+- `localStorage` with stable UUID Interface IDs
+- Search + status filters (Researched / Drafted / Sent)
+- Two-click delete confirmation
+- Stats bar with totals per status
+
+### API Routes
+- `/api/research` — forwards to n8n research webhook
+- `/api/competitor-research` — forwards to n8n competitor webhook
+- Dev mode mocks when webhooks are not configured
+
+---
+
+## Stack
+
+| Layer | Tech |
+|-------|------|
+| **Frontend** | Next.js 16 (App Router), TypeScript, Tailwind CSS |
+| **Storage** | localStorage (client), Airtable (server) |
+| **Automation** | n8n (5 webhook routes) |
+| **AI** | Claude + OpenAI (via n8n AI agents) |
+| **Scraping** | Apify (LinkedIn), Firecrawl (websites) |
+| **Email** | Gmail OAuth2 |
+
+---
+
+## Setup
+
+```bash
+npm install
+```
+
+Create `.env.local`:
+```env
+N8N_RESEARCH_WEBHOOK_URL=your_webhook_url
+N8N_COMPETITOR_WEBHOOK_URL=your_webhook_url
+```
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Runs on `http://localhost:3010`
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Project Structure
 
-## Learn More
+```
+prospect-research/
+├── app/                    # Next.js App Router pages
+│   ├── page.tsx            # Home
+│   ├── scrape/page.tsx     # Research page
+│   ├── database/page.tsx   # Database page
+│   └── api/                # API routes (webhook bridges)
+├── components/             # React components
+├── lib/                    # Utilities, types, database layer
+├── docs/                   # Architecture diagrams
+└── public/                 # Static assets
+```
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Development is in progress.

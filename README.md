@@ -6,19 +6,9 @@ An AI-powered prospect research and outreach system. Company intelligence, compe
 
 ## System Architecture
 
-### n8n Workflow (Live Screenshot)
+**[View Full System Flow Diagram on Excalidraw](https://excalidraw.com/#json=d45JxtqejWDwfiKHFHESC,tJaq6vHoRAHmx6eYsYb2ZQ)** — interactive, zoomable, editable
 
-The actual n8n workflow — 5 color-coded action routes triggered by a single webhook:
-
-![n8n Workflow](docs/n8n-workflow.png)
-
-### System Flow Diagram
-
-Clean architecture breakdown — how all 5 flows connect, what each node does, and where data lands:
-
-[![System Flow Diagram](docs/system-flow-diagram.png)](https://excalidraw.com/#json=d45JxtqejWDwfiKHFHESC,tJaq6vHoRAHmx6eYsYb2ZQ)
-
-> Click the diagram to open it in Excalidraw (interactive, zoomable, editable)
+5 action routes triggered by a single webhook entry point:
 
 ---
 
@@ -146,6 +136,3 @@ prospect-research/
 └── public/                 # Static assets
 ```
 
----
-
-Development is in progress.

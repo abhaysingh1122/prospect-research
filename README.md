@@ -6,9 +6,17 @@ An AI-powered prospect research and outreach system. Company intelligence, compe
 
 ## System Architecture
 
-**[View Full System Flow Diagram on Excalidraw](https://excalidraw.com/#json=d45JxtqejWDwfiKHFHESC,tJaq6vHoRAHmx6eYsYb2ZQ)** — interactive, zoomable, editable
+### n8n Workflow
 
-5 action routes triggered by a single webhook entry point:
+<!-- DRAG & DROP your n8n workflow screenshot below this line -->
+
+
+### System Flow Diagram
+
+<!-- DRAG & DROP your Excalidraw flow diagram screenshot below this line -->
+
+
+**[Open Interactive Diagram on Excalidraw](https://excalidraw.com/#json=d45JxtqejWDwfiKHFHESC,tJaq6vHoRAHmx6eYsYb2ZQ)**
 
 ---
 
